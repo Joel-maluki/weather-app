@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hola Boys Weather App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+</head>
+<body class="bg-blue-50 text-gray-900 font-sans">
+    <div class="max-w-md mx-auto mt-5 p-4 bg-white shadow-lg rounded-lg">
+        <div class="flex justify-between items-center">
+            <h2 class="text-xl font-bold">Hola Boys Weather</h2>
+            <i class="fas fa-cloud-sun text-yellow-500 text-3xl"></i>
+        </div>
+        <p class="text-sm text-gray-600">Tana River County, Kenya</p>
+        
+        <div id="weather" class="mt-4 text-center">
+            <h3 class="text-3xl font-bold" id="temperature">--°C</h3>
+            <p id="condition" class="text-gray-600">Loading...</p>
+            <p class="text-sm text-gray-500">Humidity: <span id="humidity">--%</span> | Wind: <span id="wind">-- km/h</span></p>
+        </div>
+        
+        <div class="mt-5 p-3 bg-blue-100 rounded-lg">
+            <h4 class="font-semibold">Air Quality Index</h4>
+            <p class="text-xl font-bold" id="aqi">--</p>
+            <p id="aqi-status" class="text-sm text-gray-500">Loading...</p>
+        </div>
+        
+        <div class="mt-5 flex justify-between text-center">
+            <div>
+                <h5 class="font-semibold">Sunrise</h5>
+                <p id="sunrise" class="text-yellow-600">--:-- AM</p>
+            </div>
+            <div>
+                <h5 class="font-semibold">Sunset</h5>
+                <p id="sunset" class="text-orange-600">--:-- PM</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const apiKey = "YOUR_OPENWEATHERMAP_API_KEY";
+        const city = "Hola, KE";
+
+        async function fetchWeather() {
+            const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`);
+            const data = await res.json();
+            document.getElementById("temperature").innerText = `${data.main.temp}°C`;
+            document.getElementById("condition").innerText = data.weather[0].description;
+            document.getElementById("humidity").innerText = `${data.main.humidity}%`;
+            document.getElementById("wind").innerText = `${data.wind.speed} km/h`;
+        }
+
+        async function fetchAirQuality() {
+            const res = await fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=-1.5&lon=40.0&appid=${apiKey}`);
+            const data = await res.json();
+            document.getElementById("aqi").innerText = data.list[0].main.aqi;
+            const status = ["Good", "Fair", "Moderate", "Poor", "Very Poor"];
+            document.getElementById("aqi-status").innerText = status[data.list[0].main.aqi - 1];
+        }
+
+        async function fetchSunData() {
+            const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`);
+            const data = await res.json();
+            const sunrise = new Date(data.sys.sunrise * 1000).toLocaleTimeString();
+            const sunset = new Date(data.sys.sunset * 1000).toLocaleTimeString();
+            document.getElementById("sunrise").innerText = sunrise;
+            document.getElementById("sunset").innerText = sunset;
+        }
+        
+        fetchWeather();
+        fetchAirQuality();
+        fetchSunData();
+    </script>
+</body>
+</html>
